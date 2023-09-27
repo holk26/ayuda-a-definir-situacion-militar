@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import AggregatedAnswers from './result';
+
 export default function Home() {
     
 
@@ -12,37 +14,51 @@ export default function Home() {
 
   const questions = [
     { question: 'Nombre Completo', type: 'text' },
-    { question: 'Edad', type: 'text' },
-    { question: 'Question 2', type: 'radio', options: ['Option 1', 'Option 2', 'Option 3'] },
+    { question: 'Edad', type: 'number' },
+    { question: 'Estado civil', type: 'radio', options: ['Soltero', 'Casado', 'Union libre', 'Viudo'] },
+    { question: 'Seleccione', type: 'radio', options: ['Estudiante', 'Padre o madre de familia', 'Discapacidad física o mental', 'Víctima del conflicto armado', 'Objetor de conciencia'] },
     { question: 'Question 3', type: 'checkbox', options: ['Option 1', 'Option 2', 'Option 3'] },
     { question: 'Question 4', type: 'textarea' },
   ];
 
   const handleAnswer = (answer) => {
-    console.log(currentQuestion);
-    setAnswers([...answers, answer]);
-    setCurrentQuestion(currentQuestion + 1);
+    
+    // Verificar si ya existe una respuesta para la pregunta actual
+    const isAnswered = answers[currentQuestion] !== undefined;
+  
+    if (!isAnswered) {
+      // Si no hay una respuesta previa para esta pregunta, agregar la respuesta
+      setAnswers([...answers, answer]);
+    } else {
+      // Si ya hay una respuesta para esta pregunta, actualizarla
+      const updatedAnswers = [...answers];
+      updatedAnswers[currentQuestion] = answer;
+      setAnswers(updatedAnswers);
+    }
+  
   };
+  
 
-  const AggregatedAnswers = () => {
-    return (
-      <ul>
-        {answers.map((answer, index) => (
-          <li className="text-3xl font-bold mb-4 text-black" key={index}>{answer}</li>
-        ))}
-      </ul>
-    );
-  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-200">
       <div className="bg-white p-10 rounded-lg shadow-lg max-w-md w-full">
         {currentQuestion < questions.length ? (
           <>
-            <h1 className="text-3xl font-bold mb-4 text-black">{questions[currentQuestion].question}</h1>
+            <h1 className="text-5xl font-bold mb-4 text-black">Mi libreta militar</h1>
+            <h2 className="text-3xl font-bold mb-4 text-black">{questions[currentQuestion].question}</h2>
             {questions[currentQuestion].type === 'text' && (
               <input
                 type="text"
+                className="w-full border border-gray-300 p-2 rounded-lg mb-4 text-black"
+                placeholder="Enter your answer"
+                onChange={(e) => handleAnswer(e.target.value)}
+              />
+            )}
+            {questions[currentQuestion].type === 'number' && (
+              <input
+                type="number"
                 className="w-full border border-gray-300 p-2 rounded-lg mb-4 text-black"
                 placeholder="Enter your answer"
                 onChange={(e) => handleAnswer(e.target.value)}
@@ -111,7 +127,7 @@ export default function Home() {
         ) : (
           <div>
             <h1 className="text-3xl font-bold mb-4 text-black">Para definir su situacion militar tiene que hacer:!</h1>
-            <AggregatedAnswers />
+            <AggregatedAnswers answersG={answers}/>
           </div>
         )}
       </div>
